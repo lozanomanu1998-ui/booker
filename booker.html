@@ -1,0 +1,2176 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SUPER BOOKER</title>
+  <style>
+    :root {
+      --bg: #111318;
+      --panel: #1a1f29;
+      --panel-2: #232a36;
+      --text: #f5f7fb;
+      --muted: #b7c0d0;
+      --accent: #4ea1ff;
+      --success: #2ac26c;
+      --warning: #f0b429;
+      --danger: #b13a3a;
+      --danger-2: #852828;
+      --border: #303a4b;
+      --raw: #7f1d1d;
+      --smackdown: #0b3b8f;
+      --nxt: #6b4c00;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        linear-gradient(135deg, rgba(160, 20, 20, 0.55) 0%, rgba(160, 20, 20, 0.08) 32%, transparent 52%),
+        linear-gradient(135deg, rgba(201, 151, 27, 0.42) 0%, rgba(201, 151, 27, 0.08) 30%, transparent 54%),
+        linear-gradient(135deg, rgba(28, 87, 201, 0.5) 0%, rgba(28, 87, 201, 0.1) 34%, transparent 56%),
+        linear-gradient(135deg, #090c12 0%, #0f1420 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1200px, 95%);
+      margin: 0 auto;
+      padding: 1rem 0 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 1rem 0 1rem;
+      letter-spacing: 1px;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin: -0.2rem 0 0.7rem;
+    }
+
+    .save-btn {
+      background: #1f7a37;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      color: #fff;
+      padding: 0.42rem 0.75rem;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .save-status {
+      margin-left: 0.55rem;
+      align-self: center;
+      font-size: 0.78rem;
+      color: #cfd8e3;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin: 0 0 1rem;
+    }
+
+    .tab-btn {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(0, 0, 0, 0.72);
+      color: #fff;
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    .tab-btn.active {
+      border-color: transparent;
+    }
+
+    .tab-btn[data-brand="RAW"].active { background: var(--raw); }
+    .tab-btn[data-brand="NXT"].active { background: var(--nxt); }
+    .tab-btn[data-brand="SMACKDOWN"].active { background: var(--smackdown); }
+
+    .brand-panel {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      background: rgba(0, 0, 0, 0.72);
+      overflow: hidden;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(2px);
+    }
+
+    .brand-header {
+      margin: 0;
+      padding: 0.8rem 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .brand-panel.raw .brand-header { background: var(--raw); }
+    .brand-panel.smackdown .brand-header { background: var(--smackdown); }
+    .brand-panel.nxt .brand-header { background: var(--nxt); }
+
+    .divisions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .division-card {
+      background: rgba(0, 0, 0, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-height: 260px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .division-title {
+      margin: 0;
+      font-size: 1rem;
+      color: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+    }
+
+    .section-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    ul { margin: 0; padding-left: 1rem; }
+
+    .fighters-list { min-height: 48px; }
+
+    .fighter-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .fighter-name {
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .history {
+      min-height: 56px;
+      max-height: 180px;
+      overflow: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 0.5rem;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .history-item {
+      margin: 0 0 0.45rem;
+      font-size: 0.92rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .history-item:last-child { margin-bottom: 0; }
+
+    .match-checkbox {
+      margin: 0;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+
+    .match-text { word-break: break-word; }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+      margin: 0;
+      font-size: 0.92rem;
+    }
+
+    .actions {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.45rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.24s ease, filter 0.24s ease, box-shadow 0.24s ease, opacity 0.24s ease;
+    }
+
+    button:active { transform: translateY(1px); }
+    .btn-add { background: var(--success); }
+    .btn-generate { background: var(--accent); }
+    .btn-clear { background: var(--danger); }
+    .btn-delete-selected { background: #6a42bf; }
+
+    .btn-delete-one,
+    .btn-show-delete,
+    .btn-delete-fighter {
+      background: var(--danger-2);
+      padding: 0.22rem 0.45rem;
+      font-size: 0.78rem;
+      border-radius: 6px;
+    }
+
+    button:hover {
+      opacity: 1;
+      filter: brightness(1.13);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 14px rgba(0, 0, 0, 0.28);
+    }
+
+    .show-board {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 0.9rem;
+      background: rgba(0, 0, 0, 0.72);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(2px);
+    }
+
+    .show-board h2 {
+      margin: 0 0 0.6rem;
+      font-size: 1.08rem;
+    }
+
+    .show-table-wrap {
+      overflow: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.68);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .show-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    .show-table th,
+    .show-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.45rem 0.55rem;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .show-table tr:last-child td { border-bottom: none; }
+
+    .ppv-controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.55rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .ppv-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.62);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 6px;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+    }
+
+    .ppv-feedback {
+      margin: 0 0 0.75rem;
+      font-size: 0.85rem;
+      color: #d8dde7;
+      min-height: 1rem;
+    }
+
+    .ppv-history {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: #eaf0f9;
+    }
+
+    .result-select {
+      width: 100%;
+      background: #1f2837;
+      color: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.28rem 0.35rem;
+      font-size: 0.86rem;
+    }
+
+
+    .ranking-wrap {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 0.9rem;
+      background: rgba(0, 0, 0, 0.7);
+      margin-bottom: 1.2rem;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+    }
+
+    .ranking-brand-title {
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ranking-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .ranking-division {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.68);
+      padding: 0.55rem;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .ranking-division h4 {
+      margin: 0 0 0.45rem;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .ranking-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      table-layout: auto;
+    }
+
+    .ranking-table th,
+    .ranking-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.32rem;
+      text-align: left;
+      white-space: normal;
+      overflow-wrap: break-word;
+      word-break: normal;
+      hyphens: auto;
+      vertical-align: top;
+    }
+
+
+    .ranking-table th:nth-child(1),
+    .ranking-table td:nth-child(1),
+    .ranking-table th:nth-child(2),
+    .ranking-table td:nth-child(2),
+    .ranking-table th:nth-child(4),
+    .ranking-table td:nth-child(4),
+    .ranking-table th:nth-child(5),
+    .ranking-table td:nth-child(5),
+    .ranking-table th:nth-child(6),
+    .ranking-table td:nth-child(6) {
+      white-space: nowrap;
+      width: 1%;
+    }
+
+    .ranking-table th:nth-child(3),
+    .ranking-table td:nth-child(3) {
+      width: auto;
+    }
+
+    .ranking-table tr:last-child td { border-bottom: none; }
+
+
+    .ranking-move-up { color: #57d17a; font-weight: bold; }
+    .ranking-move-down { color: #ff6b6b; font-weight: bold; }
+    .ranking-move-flat { color: #d8dde7; font-weight: bold; }
+
+    .ranking-points-input {
+      width: 100%;
+      max-width: 70px;
+      background: rgba(0, 0, 0, 0.62);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 6px;
+      padding: 0.22rem 0.3rem;
+      font-size: 0.8rem;
+      box-sizing: border-box;
+    }
+
+    .ranking-reset-btn {
+      background: #8a5f14;
+      margin-bottom: 0.45rem;
+    }
+
+    .champion-select {
+      width: 100%;
+      margin: 0 0 0.45rem;
+      background: rgba(0, 0, 0, 0.62);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 6px;
+      padding: 0.28rem 0.35rem;
+      font-size: 0.82rem;
+      box-sizing: border-box;
+    }
+
+    .champion-assign-btn,
+    .champion-clear-btn {
+      white-space: nowrap;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.78rem;
+    }
+
+    .champion-clear-btn {
+      background: #6f3131;
+    }
+  </style>
+</head>
+<body>
+ <div class="container">
+  <h1>&lt;SUPER BOOKER&gt;</h1>
+
+  <div class="top-actions">
+    <button id="manualSaveBtn" class="save-btn" type="button">Guardar</button>
+    <span id="saveStatus" class="save-status" aria-live="polite">Sin guardar</span>
+  </div> <!-- cierra top-actions -->
+
+  <div id="app">
+    
+    <div id="standardMatches">
+      <h2>Luchas estándar</h2>
+      <div id="fightContainer"></div>
+    </div> <!-- cierra standardMatches -->
+
+    <div id="ppvPrincipal">
+      <h2>PPV - Roster Principal</h2>
+      <div id="ppvPrincipalContainer"></div>
+    </div> <!-- cierra ppvPrincipal -->
+
+    <div id="ppvNXT">
+      <h2>NXT PPV</h2>
+      <div id="ppvNXTContainer"></div>
+
+      <div class="canjeMITB">
+        <h2>Canjear Money In The Bank</h2>
+        <select id="luchadorMITB">
+          <option value="">Selecciona luchador con MITB activo</option>
+        </select>
+        <select id="tituloMITB">
+          <option value="">Selecciona título</option>
+        </select>
+        <button id="canjearMITBBtn">Canjear Money In The Bank</button>
+
+        <div id="rankingContainer">
+          <h2>Ranking por division</h2>
+        </div>
+        
+      </div> <!-- cierra canjeMITB -->
+
+    </div> <!-- cierra ppvNXT -->
+
+  </div> <!-- cierra app -->
+
+</div> <!-- cierra container -->
+  
+  <script>
+    (function () {
+      const STORAGE_KEY = 'superBookerDataV1';
+      const STORAGE_BACKUP_KEY = 'superBookerDataV1_backup';
+      const TAB_ORDER = ['RAW', 'NXT', 'SMACKDOWN', 'RANKINGS', 'PPV', 'NXT_PPV'];
+
+      const structure = {
+        RAW: [
+          "Women's Intercontinental",
+          'Intercontinental',
+          'World Tag Team',
+          "World Women's",
+          'World Heavyweight'
+        ],
+        SMACKDOWN: [
+          "Women's United States",
+          'United States',
+          'WWE Tag Team',
+          "WWE Women's",
+          'Undisputed'
+        ],
+        NXT: [
+          "NXT Women's Northamerican",
+          'NXT Northamerican',
+          'NXT Tag Team',
+          "NXT Women's",
+          'NXT Championship'
+        ]
+      };
+
+      const app = document.getElementById('app');
+      const manualSaveBtn = document.getElementById('manualSaveBtn');
+      const saveStatus = document.getElementById('saveStatus');
+      let state = loadState();
+      let activeBrand = TAB_ORDER[0];
+
+      function createDefaultState() {
+        const data = {
+          showBoard: [],
+          rankings: {},
+          ppv: {
+            main: { history: [] },
+            nxt: { history: [] }
+          }
+        };
+
+        Object.entries(structure).forEach(([brand, divisions]) => {
+          data[brand] = {};
+          data.rankings[brand] = {};
+          divisions.forEach((division) => {
+            data[brand][division] = {
+              fighters: [],
+              matches: [],
+              champion: null
+            };
+            data.rankings[brand][division] = [];
+          });
+        });
+
+        return data;
+      }
+
+      function normalizeRankingEntry(entry) {
+        if (!entry || typeof entry !== 'object') return null;
+        if (typeof entry.name !== 'string' || !entry.name.trim()) return null;
+
+        return {
+          name: entry.name,
+          points: Number.isFinite(Number(entry.points)) ? Number(entry.points) : 0,
+          wins: Number.isFinite(Number(entry.wins)) ? Number(entry.wins) : 0,
+          losses: Number.isFinite(Number(entry.losses)) ? Number(entry.losses) : 0,
+          previousPosition: Number.isInteger(entry.previousPosition) ? entry.previousPosition : null,
+          movementFrom: Number.isInteger(entry.movementFrom) ? entry.movementFrom : null
+        };
+      }
+
+      function normalizeShowMatch(entry) {
+        if (!entry || typeof entry !== 'object') return null;
+
+        const normalized = {
+          division: typeof entry.division === 'string' ? entry.division : '',
+          fighterA: typeof entry.fighterA === 'string' ? entry.fighterA : '',
+          fighterB: typeof entry.fighterB === 'string' ? entry.fighterB : '',
+          ganadorId: entry.ganadorId === 'A' || entry.ganadorId === 'B' ? entry.ganadorId : null,
+          resultadoRegistrado: entry.resultadoRegistrado === true,
+          fechaResultado: typeof entry.fechaResultado === 'string' ? entry.fechaResultado : null,
+          scoreApplied: entry.scoreApplied === true,
+          scoreMeta: null
+        };
+
+        const meta = entry.scoreMeta;
+        if (meta && typeof meta === 'object') {
+          normalized.scoreMeta = {
+            brand: typeof meta.brand === 'string' ? meta.brand : '',
+            division: typeof meta.division === 'string' ? meta.division : normalized.division,
+            winner: typeof meta.winner === 'string' ? meta.winner : '',
+            loser: typeof meta.loser === 'string' ? meta.loser : '',
+            winnerDelta: Number.isFinite(Number(meta.winnerDelta)) ? Number(meta.winnerDelta) : 0,
+            loserDelta: Number.isFinite(Number(meta.loserDelta)) ? Number(meta.loserDelta) : 0
+          };
+        }
+
+        return normalized;
+      }
+
+      function getShuffledFighters(list) {
+        const clone = list.slice();
+        for (let i = clone.length - 1; i > 0; i -= 1) {
+          const j = randomIndex(i + 1);
+          const temp = clone[i];
+          clone[i] = clone[j];
+          clone[j] = temp;
+        }
+        return clone;
+      }
+
+      function createInitialRankingEntries(fighters) {
+        return getShuffledFighters(fighters).map((name, index) => ({
+          name,
+          points: 0,
+          wins: 0,
+          losses: 0,
+          previousPosition: index + 1,
+          movementFrom: index + 1
+        }));
+      }
+
+      function syncRankingWithFighters(fighters, rankingEntries) {
+        const safeRanking = Array.isArray(rankingEntries)
+          ? rankingEntries.map(normalizeRankingEntry).filter(Boolean)
+          : [];
+
+        if (safeRanking.length === 0) {
+          return createInitialRankingEntries(fighters);
+        }
+
+        const uniqueNames = new Set();
+        const filtered = [];
+        safeRanking.forEach((entry) => {
+          if (!fighters.includes(entry.name)) return;
+          if (uniqueNames.has(entry.name)) return;
+          uniqueNames.add(entry.name);
+          filtered.push(entry);
+        });
+
+        fighters.forEach((fighter) => {
+          if (!uniqueNames.has(fighter)) {
+            filtered.push({
+              name: fighter,
+              points: 0,
+              wins: 0,
+              losses: 0,
+              previousPosition: null,
+              movementFrom: null
+            });
+            uniqueNames.add(fighter);
+          }
+        });
+
+        filtered.forEach((entry, index) => {
+          const pos = index + 1;
+          if (!Number.isInteger(entry.previousPosition)) entry.previousPosition = pos;
+          if (!Number.isInteger(entry.movementFrom)) entry.movementFrom = entry.previousPosition;
+        });
+
+        return filtered;
+      }
+
+      function mergeWithDefaults(saved) {
+        const base = createDefaultState();
+        if (!saved || typeof saved !== 'object') return base;
+
+        base.showBoard = Array.isArray(saved.showBoard)
+          ? saved.showBoard.map(normalizeShowMatch).filter(Boolean)
+          : [];
+
+        Object.keys(structure).forEach((brand) => {
+          Object.keys(base[brand]).forEach((division) => {
+            const incoming = saved?.[brand]?.[division];
+            if (incoming && typeof incoming === 'object') {
+              base[brand][division] = {
+                fighters: Array.isArray(incoming.fighters) ? incoming.fighters : [],
+                matches: Array.isArray(incoming.matches) ? incoming.matches : [],
+                champion: typeof incoming.champion === 'string' && incoming.champion.trim()
+                  ? incoming.champion.trim()
+                  : null
+              };
+            }
+
+            const legacyChampion = saved?.champions?.[brand]?.[division];
+            if (!base[brand][division].champion && typeof legacyChampion === 'string' && legacyChampion.trim()) {
+              base[brand][division].champion = legacyChampion.trim();
+            }
+
+            if (base[brand][division].champion) {
+              base[brand][division].fighters = base[brand][division].fighters.filter(
+                (name) => name !== base[brand][division].champion
+              );
+            }
+
+            const existingRanking = saved?.rankings?.[brand]?.[division];
+            base.rankings[brand][division] = syncRankingWithFighters(
+              base[brand][division].fighters,
+              existingRanking
+            );
+          });
+        });
+
+        const savedMainHistory = saved?.ppv?.main?.history;
+        const savedNxtHistory = saved?.ppv?.nxt?.history;
+        base.ppv.main.history = Array.isArray(savedMainHistory)
+          ? savedMainHistory.map((item) => sanitizeText(item)).filter(Boolean)
+          : [];
+        base.ppv.nxt.history = Array.isArray(savedNxtHistory)
+          ? savedNxtHistory.map((item) => sanitizeText(item)).filter(Boolean)
+          : [];
+
+        return base;
+      }
+
+      function getTabLabel(tabId) {
+        if (tabId === 'SMACKDOWN') return 'SmackDown';
+        if (tabId === 'NXT_PPV') return 'NXT PPV';
+        return tabId;
+      }
+
+      function tryReadStorage(key) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          return mergeWithDefaults(parsed);
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function loadState() {
+        const primary = tryReadStorage(STORAGE_KEY);
+        if (primary) return primary;
+
+        const backup = tryReadStorage(STORAGE_BACKUP_KEY);
+        if (backup) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(backup));
+          } catch (_) {
+            // no-op
+          }
+          return backup;
+        }
+
+        return createDefaultState();
+      }
+
+      function updateSaveStatus(message, color) {
+        if (!saveStatus) return;
+        saveStatus.textContent = message;
+        if (color) saveStatus.style.color = color;
+      }
+
+      function saveState(mode = 'auto') {
+        try {
+          const payload = JSON.stringify(state);
+          localStorage.setItem(STORAGE_KEY, payload);
+          localStorage.setItem(STORAGE_BACKUP_KEY, payload);
+          const time = new Date().toLocaleTimeString();
+          const prefix = mode === 'manual' ? 'Guardado manual' : 'Auto-guardado';
+          updateSaveStatus(`${prefix}: ${time}`, '#b9f6ca');
+          return true;
+        } catch (error) {
+          console.error('Error al guardar en localStorage:', error);
+          updateSaveStatus('Error al guardar', '#ff9f9f');
+          return false;
+        }
+      }
+
+      function sanitizeText(value) {
+        return String(value).replace(/[<>]/g, '').trim();
+      }
+
+      function getDivisionLocation(divisionName) {
+        for (const brand of Object.keys(structure)) {
+          if (structure[brand].includes(divisionName)) {
+            return { brand, division: divisionName };
+          }
+        }
+        return null;
+      }
+
+      function rankFighters(brand, division) {
+        const ranking = state.rankings[brand][division];
+        ranking.forEach((entry, index) => {
+          entry.previousPosition = index + 1;
+        });
+
+        const decorated = ranking.map((entry, index) => ({ entry, index }));
+        decorated.sort((a, b) => {
+          if (b.entry.points !== a.entry.points) {
+            return b.entry.points - a.entry.points;
+          }
+          return a.index - b.index;
+        });
+
+        state.rankings[brand][division] = decorated.map((item, index) => {
+          item.entry.movementFrom = item.entry.previousPosition;
+          item.entry.previousPosition = index + 1;
+          return item.entry;
+        });
+      }
+
+      function neutralizeMovement(brand, division) {
+        state.rankings[brand][division].forEach((entry, index) => {
+          entry.previousPosition = index + 1;
+          entry.movementFrom = index + 1;
+        });
+      }
+
+      function getRankingEntry(brand, division, fighterName) {
+        return state.rankings[brand][division].find((entry) => entry.name === fighterName) || null;
+      }
+
+      function syncDivisionRanking(brand, division) {
+        state.rankings[brand][division] = syncRankingWithFighters(
+          state[brand][division].fighters,
+          state.rankings[brand][division]
+        );
+      }
+
+      function setDivisionChampion(brand, division, championName) {
+        const divisionState = state[brand][division];
+        const previousChampion = divisionState.champion;
+        const nextChampion = sanitizeText(championName || '');
+
+        if (!nextChampion) {
+          if (previousChampion && !divisionState.fighters.includes(previousChampion)) {
+            divisionState.fighters.push(previousChampion);
+          }
+          divisionState.champion = null;
+          syncDivisionRanking(brand, division);
+          saveState();
+          render();
+          return;
+        }
+
+        if (!divisionState.fighters.includes(nextChampion)) return;
+
+        divisionState.fighters = divisionState.fighters.filter((name) => name !== nextChampion);
+
+        if (previousChampion && previousChampion !== nextChampion && !divisionState.fighters.includes(previousChampion)) {
+          divisionState.fighters.push(previousChampion);
+        }
+
+        divisionState.champion = nextChampion;
+        syncDivisionRanking(brand, division);
+        saveState();
+        render();
+      }
+
+      function resetDivisionPoints(brand, division) {
+        state.rankings[brand][division].forEach((entry) => {
+          entry.points = 0;
+        });
+        neutralizeMovement(brand, division);
+        saveState();
+        render();
+      }
+
+      function editFighterPoints(brand, division, fighterName, nextPoints) {
+        const fighter = getRankingEntry(brand, division, fighterName);
+        if (!fighter) return;
+
+        fighter.points = Number.isFinite(nextPoints) ? nextPoints : 0;
+        rankFighters(brand, division);
+        saveState();
+        render();
+      }
+
+      function applyMatchScore(match, winnerId) {
+        const divisionLocation = getDivisionLocation(match.division);
+        if (!divisionLocation) return false;
+
+        const { brand, division } = divisionLocation;
+        const winnerName = winnerId === 'A' ? match.fighterA : match.fighterB;
+        const loserName = winnerId === 'A' ? match.fighterB : match.fighterA;
+
+        const winner = getRankingEntry(brand, division, winnerName);
+        const loser = getRankingEntry(brand, division, loserName);
+        if (!winner || !loser) return false;
+
+        const winnerPos = state.rankings[brand][division].indexOf(winner) + 1;
+        const loserPos = state.rankings[brand][division].indexOf(loser) + 1;
+
+        let winnerDelta = 8;
+        let loserDelta = -3;
+
+        if (winnerPos > loserPos) winnerDelta += 2;
+        if (loserPos < winnerPos) loserDelta -= 2;
+
+        winner.points += winnerDelta;
+        winner.wins += 1;
+        loser.points = Math.max(0, loser.points + loserDelta);
+        loser.losses += 1;
+
+        rankFighters(brand, division);
+
+        match.scoreApplied = true;
+        match.scoreMeta = {
+          brand,
+          division,
+          winner: winnerName,
+          loser: loserName,
+          winnerDelta,
+          loserDelta
+        };
+
+        return true;
+      }
+
+      function rollbackMatchScore(match) {
+        if (!match.scoreApplied || !match.scoreMeta) return;
+        const { brand, division, winner, loser, winnerDelta, loserDelta } = match.scoreMeta;
+        const winnerEntry = getRankingEntry(brand, division, winner);
+        const loserEntry = getRankingEntry(brand, division, loser);
+
+        if (winnerEntry) {
+          winnerEntry.points = Math.max(0, winnerEntry.points - winnerDelta);
+          winnerEntry.wins = Math.max(0, winnerEntry.wins - 1);
+        }
+        if (loserEntry) {
+          loserEntry.points = Math.max(0, loserEntry.points - loserDelta);
+          loserEntry.losses = Math.max(0, loserEntry.losses - 1);
+        }
+
+        rankFighters(brand, division);
+        match.scoreApplied = false;
+        match.scoreMeta = null;
+      }
+
+      function addFighter(brand, division) {
+        const input = prompt(`Agregar luchador a ${brand} - ${division}:`);
+        if (input === null) return;
+
+        const name = sanitizeText(input);
+        if (!name) return;
+
+        const divisionState = state[brand][division];
+        const alreadyExists = divisionState.fighters.some((fighter) =>
+          fighter.localeCompare(name, undefined, { sensitivity: 'accent' }) === 0
+        ) || (
+          typeof divisionState.champion === 'string' &&
+          divisionState.champion.localeCompare(name, undefined, { sensitivity: 'accent' }) === 0
+        );
+        if (alreadyExists) return;
+
+        state[brand][division].fighters.push(name);
+        syncDivisionRanking(brand, division);
+        saveState();
+        render();
+      }
+
+      function deleteFighter(brand, division, fighterName) {
+        const confirmed = confirm('¿Eliminar a este luchador de la división?');
+        if (!confirmed) return;
+
+        const fighters = state[brand][division].fighters;
+        const index = fighters.indexOf(fighterName);
+        if (index === -1) return;
+
+        fighters.splice(index, 1);
+        if (state[brand][division].champion === fighterName) {
+          state[brand][division].champion = null;
+        }
+        syncDivisionRanking(brand, division);
+        saveState();
+        render();
+      }
+
+      function randomIndex(max) {
+        if (max <= 0) return 0;
+
+        if (window.crypto && window.crypto.getRandomValues) {
+          const bytes = new Uint32Array(1);
+          const maxUint = 0xFFFFFFFF;
+          const limit = maxUint - (maxUint % max);
+
+          let value;
+          do {
+            window.crypto.getRandomValues(bytes);
+            value = bytes[0];
+          } while (value >= limit);
+
+          return value % max;
+        }
+
+        return Math.floor(Math.random() * max);
+      }
+
+      function normalizePair(a, b) {
+        return [a, b].sort((x, y) => x.localeCompare(y)).join(' vs ');
+      }
+
+      function randomPair(list, lastPairKey) {
+        const totalCombos = (list.length * (list.length - 1)) / 2;
+        let attempts = 0;
+
+        while (attempts < 80) {
+          const firstIndex = randomIndex(list.length);
+          let secondIndex = randomIndex(list.length);
+
+          while (secondIndex === firstIndex) {
+            secondIndex = randomIndex(list.length);
+          }
+
+          const a = list[firstIndex];
+          const b = list[secondIndex];
+          const pairKey = normalizePair(a, b);
+
+          if (totalCombos === 1 || pairKey !== lastPairKey || attempts > 30) {
+            return [a, b];
+          }
+
+          attempts += 1;
+        }
+
+        const first = list[0];
+        const second = list[1];
+        return [first, second, normalizePair(first, second)];
+      }
+
+      function generateMatch(brand, division) {
+        const divisionState = state[brand][division];
+        const fighters = divisionState.fighters;
+
+        if (fighters.length < 2) {
+          divisionState.matches.push('No hay suficientes luchadores.');
+          saveState();
+          render();
+          return;
+        }
+
+        const lastMatch = divisionState.matches[divisionState.matches.length - 1] || '';
+        const lastPairKey = lastMatch.includes(' vs ') ? normalizePair(...lastMatch.split(' vs ')) : '';
+        const [a, b] = randomPair(fighters, lastPairKey);
+
+        divisionState.matches.push(`${a} vs ${b}`);
+        state.showBoard.push({
+          division: division,
+          fighterA: a,
+          fighterB: b,
+          ganadorId: null,
+          resultadoRegistrado: false,
+          fechaResultado: null,
+          scoreApplied: false,
+          scoreMeta: null
+        });
+        saveState();
+        render();
+      }
+
+      function clearMatches(brand, division) {
+        state[brand][division].matches = [];
+        saveState();
+        render();
+      }
+
+      function deleteMatchAt(brand, division, index) {
+        const matches = state[brand][division].matches;
+        if (index < 0 || index >= matches.length) return;
+
+        matches.splice(index, 1);
+        saveState();
+        render();
+      }
+
+      function deleteSelectedMatches(brand, division, indexes) {
+        const unique = Array.from(new Set(indexes)).sort((a, b) => b - a);
+        const matches = state[brand][division].matches;
+
+        unique.forEach((index) => {
+          if (index >= 0 && index < matches.length) {
+            matches.splice(index, 1);
+          }
+        });
+
+        saveState();
+        render();
+      }
+
+      function deleteShowMatchAt(index) {
+        if (index < 0 || index >= state.showBoard.length) return;
+        state.showBoard.splice(index, 1);
+        saveState();
+        render();
+      }
+
+      function updateShowResult(index, ganadorId) {
+        const match = state.showBoard[index];
+        if (!match) return;
+
+        rollbackMatchScore(match);
+
+        if (ganadorId !== 'A' && ganadorId !== 'B') {
+          match.ganadorId = null;
+          match.resultadoRegistrado = false;
+          match.fechaResultado = null;
+        } else {
+          match.ganadorId = ganadorId;
+          match.resultadoRegistrado = true;
+          match.fechaResultado = new Date().toISOString();
+          applyMatchScore(match, ganadorId);
+        }
+
+        saveState();
+        render();
+      }
+
+      function createDivisionCard(brand, division) {
+        const wrapper = document.createElement('section');
+        wrapper.className = 'division-card';
+
+        const title = document.createElement('h3');
+        title.className = 'division-title';
+        title.textContent = division;
+
+        const fightersLabel = document.createElement('p');
+        fightersLabel.className = 'section-label';
+        fightersLabel.textContent = 'Luchadores';
+
+        const fightersList = document.createElement('ul');
+        fightersList.className = 'fighters-list';
+
+        const fighters = state[brand][division].fighters;
+        if (fighters.length === 0) {
+          const empty = document.createElement('p');
+          empty.className = 'empty';
+          empty.textContent = 'Sin luchadores aún.';
+          wrapper.append(title, fightersLabel, empty);
+        } else {
+          fighters.forEach((name) => {
+            const li = document.createElement('li');
+            li.className = 'fighter-item';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'fighter-name';
+            nameSpan.textContent = name;
+
+            const deleteFighterBtn = document.createElement('button');
+            deleteFighterBtn.type = 'button';
+            deleteFighterBtn.className = 'btn-delete-fighter';
+            deleteFighterBtn.textContent = 'Eliminar';
+            deleteFighterBtn.addEventListener('click', function () {
+              deleteFighter(brand, division, name);
+            });
+
+            li.append(nameSpan, deleteFighterBtn);
+            fightersList.appendChild(li);
+          });
+          wrapper.append(title, fightersLabel, fightersList);
+        }
+
+        const historyLabel = document.createElement('p');
+        historyLabel.className = 'section-label';
+        historyLabel.textContent = 'Combates generados';
+
+        const history = document.createElement('div');
+        history.className = 'history';
+
+        const matches = state[brand][division].matches;
+        if (matches.length === 0) {
+          const emptyHistory = document.createElement('p');
+          emptyHistory.className = 'empty';
+          emptyHistory.textContent = 'No hay combates todavía.';
+          history.appendChild(emptyHistory);
+        } else {
+          matches.forEach((match, index) => {
+            const row = document.createElement('div');
+            row.className = 'history-item';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'match-checkbox';
+            checkbox.value = String(index);
+            checkbox.setAttribute('aria-label', `Seleccionar combate ${index + 1}`);
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'match-text';
+            if (match === 'No hay suficientes luchadores.') {
+              textSpan.textContent = match;
+            } else {
+              textSpan.textContent = `Combate generado: ${match}`;
+            }
+
+            const deleteOneBtn = document.createElement('button');
+            deleteOneBtn.type = 'button';
+            deleteOneBtn.className = 'btn-delete-one';
+            deleteOneBtn.textContent = 'Eliminar';
+            deleteOneBtn.addEventListener('click', function () {
+              deleteMatchAt(brand, division, index);
+            });
+
+            row.append(checkbox, textSpan, deleteOneBtn);
+            history.appendChild(row);
+          });
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const addBtn = document.createElement('button');
+        addBtn.className = 'btn-add';
+        addBtn.type = 'button';
+        addBtn.textContent = 'Agregar luchador';
+        addBtn.addEventListener('click', function () {
+          addFighter(brand, division);
+        });
+
+        const generateBtn = document.createElement('button');
+        generateBtn.className = 'btn-generate';
+        generateBtn.type = 'button';
+        generateBtn.textContent = 'Generar combate';
+        generateBtn.addEventListener('click', function () {
+          generateMatch(brand, division);
+        });
+
+        const deleteSelectedBtn = document.createElement('button');
+        deleteSelectedBtn.className = 'btn-delete-selected';
+        deleteSelectedBtn.type = 'button';
+        deleteSelectedBtn.textContent = 'Eliminar seleccionados';
+        deleteSelectedBtn.addEventListener('click', function () {
+          const selected = Array.from(history.querySelectorAll('.match-checkbox:checked'))
+            .map((input) => Number(input.value))
+            .filter((index) => Number.isInteger(index));
+
+          if (selected.length === 0) return;
+          deleteSelectedMatches(brand, division, selected);
+        });
+
+        const clearBtn = document.createElement('button');
+        clearBtn.className = 'btn-clear';
+        clearBtn.type = 'button';
+        clearBtn.textContent = 'Eliminar todos los combates';
+        clearBtn.addEventListener('click', function () {
+          clearMatches(brand, division);
+        });
+
+        actions.append(addBtn, generateBtn, deleteSelectedBtn, clearBtn);
+        wrapper.append(historyLabel, history, actions);
+        return wrapper;
+      }
+
+      function createRankingsView() {
+        const container = document.createElement('section');
+        container.className = 'show-board';
+
+        const title = document.createElement('h2');
+        title.textContent = 'RANKINGS';
+        container.appendChild(title);
+
+        ['RAW', 'NXT', 'SMACKDOWN'].forEach((brand) => {
+          const brandWrap = document.createElement('div');
+          brandWrap.className = 'ranking-wrap';
+
+          const brandTitle = document.createElement('h3');
+          brandTitle.className = 'ranking-brand-title';
+          brandTitle.textContent = brand === 'SMACKDOWN' ? 'SmackDown' : brand;
+          brandWrap.appendChild(brandTitle);
+
+          const grid = document.createElement('div');
+          grid.className = 'ranking-grid';
+
+          structure[brand].forEach((division) => {
+            const divisionCard = document.createElement('div');
+            divisionCard.className = 'ranking-division';
+
+            const divisionTitle = document.createElement('h4');
+            divisionTitle.textContent = division;
+
+            const champion = state[brand][division].champion;
+            if (champion) {
+              divisionTitle.textContent = `${division} — Campeón: ${champion}`;
+            }
+
+            const championSelect = document.createElement('select');
+            championSelect.className = 'champion-select';
+
+            const championPlaceholder = document.createElement('option');
+            championPlaceholder.value = '';
+            championPlaceholder.textContent = 'Sin campeón';
+            championSelect.appendChild(championPlaceholder);
+
+            state[brand][division].fighters.forEach((fighterName) => {
+              const option = document.createElement('option');
+              option.value = fighterName;
+              option.textContent = fighterName;
+              championSelect.appendChild(option);
+            });
+
+            championSelect.value = '';
+            championSelect.addEventListener('change', function () {
+              setDivisionChampion(brand, division, championSelect.value);
+            });
+
+            const resetBtn = document.createElement('button');
+            resetBtn.type = 'button';
+            resetBtn.className = 'ranking-reset-btn';
+            resetBtn.textContent = 'Reiniciar puntos';
+            resetBtn.addEventListener('click', function () {
+              resetDivisionPoints(brand, division);
+            });
+
+            const table = document.createElement('table');
+            table.className = 'ranking-table';
+
+            const thead = document.createElement('thead');
+            const headRow = document.createElement('tr');
+            ['#', 'Mov', 'Luchador', 'Puntos', 'V', 'D'].forEach((label) => {
+              const th = document.createElement('th');
+              th.textContent = label;
+              headRow.appendChild(th);
+            });
+            thead.appendChild(headRow);
+
+            const tbody = document.createElement('tbody');
+            const ranking = state.rankings[brand][division];
+
+            if (ranking.length === 0) {
+              const row = document.createElement('tr');
+              const td = document.createElement('td');
+              td.colSpan = 6;
+              td.className = 'empty';
+              td.textContent = 'Sin luchadores registrados.';
+              row.appendChild(td);
+              tbody.appendChild(row);
+            } else {
+              ranking.forEach((fighter, index) => {
+                const row = document.createElement('tr');
+
+                const tdPos = document.createElement('td');
+                tdPos.textContent = String(index + 1);
+
+                const tdMove = document.createElement('td');
+                const from = Number.isInteger(fighter.movementFrom) ? fighter.movementFrom : (index + 1);
+                const current = index + 1;
+                if (from > current) {
+                  tdMove.textContent = `▲${from}`;
+                  tdMove.className = 'ranking-move-up';
+                } else if (from < current) {
+                  tdMove.textContent = `▼${from}`;
+                  tdMove.className = 'ranking-move-down';
+                } else {
+                  tdMove.textContent = '—';
+                  tdMove.className = 'ranking-move-flat';
+                }
+
+                const tdName = document.createElement('td');
+                tdName.textContent = fighter.name;
+
+                const tdPoints = document.createElement('td');
+                const pointsInput = document.createElement('input');
+                pointsInput.type = 'number';
+                pointsInput.className = 'ranking-points-input';
+                pointsInput.value = String(fighter.points);
+                pointsInput.addEventListener('change', function () {
+                  editFighterPoints(brand, division, fighter.name, Number(pointsInput.value));
+                });
+                tdPoints.appendChild(pointsInput);
+
+                const tdWins = document.createElement('td');
+                tdWins.textContent = String(fighter.wins);
+
+                const tdLosses = document.createElement('td');
+                tdLosses.textContent = String(fighter.losses);
+
+                row.append(tdPos, tdMove, tdName, tdPoints, tdWins, tdLosses);
+                tbody.appendChild(row);
+              });
+            }
+
+            table.append(thead, tbody);
+            divisionCard.append(divisionTitle, championSelect, resetBtn, table);
+            grid.appendChild(divisionCard);
+          });
+
+          brandWrap.appendChild(grid);
+          container.appendChild(brandWrap);
+        });
+
+        return container;
+      }
+
+      function createBrandPanel(brand) {
+        const section = document.createElement('section');
+        section.className = `brand-panel ${brand.toLowerCase()}`;
+
+        const header = document.createElement('h2');
+        header.className = 'brand-header';
+        header.textContent = brand === 'SMACKDOWN' ? 'SmackDown' : brand;
+
+        const grid = document.createElement('div');
+        grid.className = 'divisions';
+
+        structure[brand].forEach((division) => {
+          grid.appendChild(createDivisionCard(brand, division));
+        });
+
+        section.append(header, grid);
+        return section;
+      }
+
+      function initializeState() {
+        Object.keys(structure).forEach((brand) => {
+          structure[brand].forEach((division) => {
+            syncDivisionRanking(brand, division);
+          });
+        });
+
+        state.showBoard.forEach((match) => {
+          if (match.resultadoRegistrado && (match.ganadorId === 'A' || match.ganadorId === 'B') && !match.scoreApplied) {
+            applyMatchScore(match, match.ganadorId);
+          }
+        });
+
+        saveState();
+      }
+
+      function createShowBoard() {
+        const board = document.createElement('section');
+        board.className = 'show-board';
+
+        const title = document.createElement('h2');
+        title.textContent = 'Cartelera del Show';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'show-table-wrap';
+
+        const table = document.createElement('table');
+        table.className = 'show-table';
+
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        ['División', 'Luchador A', 'vs', 'Luchador B', 'Resultado', 'Acciones'].forEach((label) => {
+          const th = document.createElement('th');
+          th.textContent = label;
+          headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+
+        const tbody = document.createElement('tbody');
+
+        if (state.showBoard.length === 0) {
+          const row = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 6;
+          td.className = 'empty';
+          td.textContent = 'Aún no hay combates en la cartelera.';
+          row.appendChild(td);
+          tbody.appendChild(row);
+        } else {
+          state.showBoard.forEach((match, index) => {
+            const row = document.createElement('tr');
+
+            const tdDivision = document.createElement('td');
+            tdDivision.textContent = match.division;
+
+            const tdA = document.createElement('td');
+            tdA.textContent = match.fighterA;
+
+            const tdVs = document.createElement('td');
+            tdVs.textContent = 'vs';
+
+            const tdB = document.createElement('td');
+            tdB.textContent = match.fighterB;
+
+            const tdResult = document.createElement('td');
+            const resultSelect = document.createElement('select');
+            resultSelect.className = 'result-select';
+
+            const optionNone = document.createElement('option');
+            optionNone.value = '';
+            optionNone.textContent = 'Sin resultado';
+
+            const optionA = document.createElement('option');
+            optionA.value = 'A';
+            optionA.textContent = match.fighterA;
+
+            const optionB = document.createElement('option');
+            optionB.value = 'B';
+            optionB.textContent = match.fighterB;
+
+            resultSelect.append(optionNone, optionA, optionB);
+            resultSelect.value = match.ganadorId === 'A' || match.ganadorId === 'B' ? match.ganadorId : '';
+            resultSelect.addEventListener('change', function () {
+              updateShowResult(index, resultSelect.value);
+            });
+            tdResult.appendChild(resultSelect);
+
+            const tdActions = document.createElement('td');
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'btn-show-delete';
+            deleteBtn.textContent = 'Eliminar';
+            deleteBtn.addEventListener('click', function () {
+              deleteShowMatchAt(index);
+            });
+            tdActions.appendChild(deleteBtn);
+
+            row.append(tdDivision, tdA, tdVs, tdB, tdResult, tdActions);
+            tbody.appendChild(row);
+          });
+        }
+
+        table.append(thead, tbody);
+        wrap.appendChild(table);
+        board.append(title, wrap);
+        return board;
+      }
+
+      function findPpvPartialMatches(scope, query) {
+        const q = sanitizeText(query).toLocaleLowerCase();
+        if (!q) return [];
+
+        return state.ppv[scope].history.filter((name) =>
+          name.toLocaleLowerCase().includes(q)
+        );
+      }
+
+      function generatePpv(scope, inputValue) {
+        const name = sanitizeText(inputValue);
+        if (!name) {
+          return { ok: false, message: 'Debes ingresar el nombre del PPV.' };
+        }
+
+        const matches = findPpvPartialMatches(scope, name);
+        if (matches.length > 0) {
+          return {
+            ok: false,
+            message: `Ya existe coincidencia: ${matches[0]}`
+          };
+        }
+
+        state.ppv[scope].history.push(name);
+        saveState();
+        return { ok: true, message: `PPV generado: ${name}` };
+      }
+
+      function createPpvView(scope) {
+        const container = document.createElement('section');
+        container.className = 'show-board';
+
+        const title = document.createElement('h2');
+        title.textContent = scope === 'main' ? 'PPV (RAW + SmackDown)' : 'NXT PPV';
+
+        const controls = document.createElement('div');
+        controls.className = 'ppv-controls';
+
+        const input = document.createElement('input');
+        input.className = 'ppv-input';
+        input.type = 'text';
+        input.placeholder = 'Nombre del PPV (obligatorio)';
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = 'Generar PPV';
+
+        const feedback = document.createElement('p');
+        feedback.className = 'ppv-feedback';
+
+        button.addEventListener('click', function () {
+          const result = generatePpv(scope, input.value);
+          feedback.textContent = result.message;
+          feedback.style.color = result.ok ? '#b9f6ca' : '#ffb0b0';
+          if (result.ok) {
+            input.value = '';
+            render();
+          }
+        });
+
+        input.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            button.click();
+          }
+        });
+
+        controls.append(input, button);
+
+        const historyTitle = document.createElement('h3');
+        historyTitle.textContent = 'Historial de PPV';
+
+        const historyList = document.createElement('ol');
+        historyList.className = 'ppv-history';
+
+        const history = state.ppv[scope].history;
+        if (history.length === 0) {
+          const empty = document.createElement('p');
+          empty.className = 'empty';
+          empty.textContent = 'Sin PPV generados.';
+          container.append(title, controls, feedback, historyTitle, empty);
+          return container;
+        }
+
+        history.forEach((name) => {
+          const li = document.createElement('li');
+          li.textContent = name;
+          historyList.appendChild(li);
+        });
+
+        container.append(title, controls, feedback, historyTitle, historyList);
+        return container;
+      }
+
+      function renderTabs() {
+        const tabs = document.createElement('div');
+        tabs.className = 'tabs';
+
+        TAB_ORDER.forEach((brand) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `tab-btn${activeBrand === brand ? ' active' : ''}`;
+          btn.dataset.brand = brand;
+          btn.textContent = brand === 'SMACKDOWN' ? 'SmackDown' : brand;
+          btn.addEventListener('click', function () {
+            activeBrand = brand;
+            render();
+          });
+          tabs.appendChild(btn);
+        });
+
+        return tabs;
+      }
+
+      function render() {
+        app.innerHTML = '';
+        app.appendChild(renderTabs());
+
+        if (activeBrand === 'RANKINGS') {
+          app.appendChild(createRankingsView());
+        } else if (activeBrand === 'PPV') {
+          app.appendChild(createPpvView('main'));
+        } else if (activeBrand === 'NXT_PPV') {
+          app.appendChild(createPpvView('nxt'));
+        } else {
+          app.appendChild(createBrandPanel(activeBrand));
+        }
+
+        app.appendChild(createShowBoard());
+      }
+
+      if (manualSaveBtn) {
+        manualSaveBtn.addEventListener('click', function () {
+          saveState('manual');
+        });
+      }
+
+      window.addEventListener('pagehide', function () {
+        saveState('auto');
+      });
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') {
+          saveState('auto');
+        }
+      });
+
+      initializeState();
+      render();
+      updateSaveStatus('Datos cargados', '#cfd8e3');
+    })();
+  
+  // 1️⃣ Función para generar luchas
+  function generarLuchasEstandar(divisiones, rankings, campeones) {
+      const container = document.getElementById("fightContainer");
+      container.innerHTML = "";
+
+      divisiones.forEach(division => {
+          const ranking = rankings[division];
+          const campeon = campeones[division];
+          if (!ranking || ranking.length === 0) return;
+          if (!campeon) return;
+
+          const numeroUno = ranking[0];
+          if (!numeroUno) return;
+
+          const lucha = document.createElement("div");
+          lucha.className = "fightCard";
+          lucha.innerHTML = `
+              <h3>${division}</h3>
+              <p>#1 ${numeroUno.nombre} vs Campeón ${campeon}</p>
+              <select>
+                  <option value="">Seleccionar ganador</option>
+                  <option value="${numeroUno.nombre}">${numeroUno.nombre}</option>
+                  <option value="${campeon}">${campeon}</option>
+              </select>
+          `;
+          container.appendChild(lucha);
+      });
+  }
+
+  // 2️⃣ Datos de prueba
+  const divisiones = ["RAW", "SmackDown"];
+  const rankings = {
+      RAW: [{nombre:"Rollins"}, {nombre:"McIntyre"}],
+      SmackDown: [{nombre:"Styles"}]
+  };
+  const campeones = {
+      RAW: "Gunther",
+      SmackDown: "Roman Reigns"
+  };
+
+  // 3️⃣ Generar luchas al cargar la página
+  generarLuchasEstandar(divisiones, rankings, campeones);
+
+    // 1️⃣ Función para generar luchas de PPV
+  function generarPPV(ppvOrden, rankings, campeones, contenedorId) {
+      const container = document.getElementById(contenedorId);
+      container.innerHTML = "";
+
+      ppvOrden.forEach(tituloLucha => {
+          const ranking = rankings[tituloLucha];
+          const campeon = campeones[tituloLucha];
+          if (!ranking || ranking.length === 0) return;
+          if (!campeon) return;
+
+          const numeroUno = ranking[0];
+
+          const lucha = document.createElement("div");
+          lucha.className = "fightCard";
+          lucha.innerHTML = `
+              <h3>${tituloLucha}</h3>
+              <p>#1 ${numeroUno.nombre} vs Campeón ${campeon}</p>
+              <select>
+                  <option value="">Seleccionar ganador</option>
+                  <option value="${numeroUno.nombre}">${numeroUno.nombre}</option>
+                  <option value="${campeon}">${campeon}</option>
+              </select>
+          `;
+          container.appendChild(lucha);
+      });
+  }
+
+  // 2️⃣ Orden de luchas (¡aquí mismo!)
+  const ppvPrincipalOrden = [
+      "Women's United States",
+      "Women's Intercontinental",
+      "World Tag Team",
+      "WWE Tag Team",
+      "United States",
+      "Intercontinental",
+      "World Women's",
+      "WWE Women's",
+      "World Heavyweight",
+      "Undisputed"
+  ];
+
+  const ppvNXTOrden = [
+      "NXT Women's Northamerican",
+      "NXT Northamerican",
+      "NXT Tag Team",
+      "NXT Women's",
+      "NXT"
+  ];
+
+  // 3️⃣ Datos de ejemplo de ranking y campeones
+  const rankings = { /* tus rankings aquí */ };
+  const campeones = { /* tus campeones aquí */ };
+
+  // 4️⃣ Generar PPV al cargar
+  generarPPV(ppvPrincipalOrden, rankings, campeones, "ppvPrincipalContainer");
+  generarPPV(ppvNXTOrden, rankings, campeones, "ppvNXTContainer");
+
+      // ==============================
+  // 1️⃣ Función para detectar tipo de evento
+  // ==============================
+  function detectarEvento(nombreEvento) {
+      nombreEvento = nombreEvento.toUpperCase();
+      if (nombreEvento.includes("ROYAL RUMBLE")) return "RR";
+      if (nombreEvento.includes("ELIMINATION CHAMBER")) return "EC";
+      if (nombreEvento.includes("MONEY IN THE BANK")) return "MITB";
+      if (nombreEvento.includes("WRESTLEMANIA")) return "WM";
+      return "ESTANDAR";
+  }
+
+  // ==============================
+  // 2️⃣ Función para generar luchas según evento
+  // ==============================
+  function generarPPVEvento(nombreEvento, rankings, campeones, contenedorId) {
+      const container = document.getElementById(contenedorId);
+      container.innerHTML = "";
+
+      const tipoEvento = detectarEvento(nombreEvento);
+
+      // ----------------
+      // FORMATO ESTÁNDAR
+      // ----------------
+      if (tipoEvento === "ESTANDAR") {
+          generarLuchasEstandar(Object.keys(rankings), rankings, campeones);
+          return;
+      }
+
+      // ----------------
+      // ROYAL RUMBLE
+      // ----------------
+      if (tipoEvento === "RR") {
+          const divisiones = Object.keys(rankings);
+
+          // 10 luchas titulares estándar
+          divisiones.forEach(division => {
+              const ranking = rankings[division];
+              const campeon = campeones[division];
+              if (!ranking || ranking.length === 0) return;
+              if (!campeon) return;
+
+              const numeroUno = ranking[0];
+              const lucha = document.createElement("div");
+              lucha.className = "fightCard";
+              lucha.innerHTML = `
+                  <h3>${division}</h3>
+                  <p>#1 ${numeroUno.nombre} vs Campeón ${campeon}</p>
+                  <select>
+                      <option value="">Seleccionar ganador</option>
+                      <option value="${numeroUno.nombre}">${numeroUno.nombre}</option>
+                      <option value="${campeon}">${campeon}</option>
+                  </select>
+              `;
+              container.appendChild(lucha);
+          });
+
+          // RR Femenil y RR Varonil
+          ["Royal Rumble Femenil", "Royal Rumble Varonil"].forEach(rr => {
+              const lucha = document.createElement("div");
+              lucha.className = "fightCard";
+              lucha.innerHTML = `
+                  <h3>${rr}</h3>
+                  <p>Participantes aleatorios</p>
+                  <select>
+                      <option value="">Seleccionar ganador</option>
+                      <!-- Aquí se llenará manual o dinámicamente -->
+                  </select>
+              `;
+              container.appendChild(lucha);
+          });
+      }
+
+      // ----------------
+      // EC, MITB y WM se agregarán después
+      // ----------------
+  }
+
+  // ==============================
+  // 4️⃣ Llamar a la función de PPV con evento
+  // ==============================
+  const nombreDelEvento = "Royal Rumble 2026"; // prueba
+  generarPPVEvento(nombreDelEvento, rankings, campeones, "ppvPrincipalContainer");
+
+    // ----------------
+// ELIMINATION CHAMBER
+// ----------------
+if (tipoEvento === "EC") {
+    const divisiones = Object.keys(rankings);
+
+    // 8 luchas titulares 1vs1
+    divisiones.forEach(division => {
+        const ranking = rankings[division];
+        const campeon = campeones[division];
+        if (!ranking || ranking.length === 0) return;
+        if (!campeon) return;
+
+        const numeroUno = ranking[0];
+        const segundo = ranking[1] || ranking[0]; // si solo hay 1, repite
+        const lucha = document.createElement("div");
+        lucha.className = "fightCard";
+        lucha.innerHTML = `
+            <h3>${division} - Titular</h3>
+            <p>#1 ${numeroUno.nombre} vs #2 ${segundo.nombre}</p>
+            <select>
+                <option value="">Seleccionar ganador</option>
+                <option value="${numeroUno.nombre}">${numeroUno.nombre}</option>
+                <option value="${segundo.nombre}">${segundo.nombre}</option>
+            </select>
+        `;
+        container.appendChild(lucha);
+    });
+
+    // 2 luchas de cámara
+    ["World Heavyweight", "Undisputed"].forEach(camara => {
+        const ranking = rankings[camara];
+        const campeon = campeones[camara];
+        if (!ranking || ranking.length < 5) return; // no generar si menos de 5
+        if (!campeon) return;
+
+        // top 5 + campeón
+        const top5 = ranking.slice(0, 5);
+        const participantes = [campeon, ...top5];
+
+        const luchaCamara = document.createElement("div");
+        luchaCamara.className = "fightCard";
+        luchaCamara.innerHTML = `
+            <h3>${camara} - Cámara</h3>
+            <p>Participantes: ${participantes.map(p => p.nombre).join(", ")}</p>
+            <select>
+                <option value="">Seleccionar ganador</option>
+                ${participantes.map(p => <option value="${p.nombre}">${p.nombre}</option>).join("")}
+            </select>
+        `;
+        container.appendChild(luchaCamara);
+    });
+}
+    // ----------------
+// WRESTLEMANIA - efecto RR
+// ----------------
+if (tipoEvento === "WM") {
+    Object.keys(rankings).forEach(division => {
+        const ranking = rankings[division];
+        if (!ranking || ranking.length === 0) return;
+
+        // Buscar luchadores con estado RR
+        const rrLuchadores = ranking.filter(l => l.estado === "RR");
+
+        rrLuchadores.forEach(luchador => {
+            // Si ya es #1, solo eliminar estado RR
+            if (ranking[0].nombre === luchador.nombre) {
+                luchador.estado = undefined;
+            } else {
+                // Mover a #1
+                const index = ranking.indexOf(luchador);
+                if (index > -1) ranking.splice(index, 1); // sacar de su posición
+                ranking.unshift(luchador); // meter al inicio
+                luchador.estado = undefined; // eliminar estado RR
+            }
+        });
+    });
+
+    // Opcional: refrescar la interfaz de ranking aquí si la tienes
+    console.log("Efecto WrestleMania aplicado: todos los RR a #1");
+}
+    if (tipoEvento === "MITB") {
+    const divisiones = Object.keys(rankings);
+
+    // 10 luchas titulares estándar
+    divisiones.forEach(division => {
+        const ranking = rankings[division];
+        const campeon = campeones[division];
+        if (!ranking || ranking.length === 0) return;
+        if (!campeon) return;
+
+        const numeroUno = ranking[0];
+        const segundo = ranking[1] || ranking[0];
+        const lucha = document.createElement("div");
+        lucha.className = "fightCard";
+        lucha.innerHTML = `
+            <h3>${division} - Titular</h3>
+            <p>#1 ${numeroUno.nombre} vs #2 ${segundo.nombre}</p>
+            <select class="ganadorSelect">
+                <option value="">Seleccionar ganador</option>
+                <option value="${numeroUno.nombre}">${numeroUno.nombre}</option>
+                <option value="${segundo.nombre}">${segundo.nombre}</option>
+            </select>
+        `;
+        container.appendChild(lucha);
+
+        // Evento para asignar estado MITB al ganador
+        const select = lucha.querySelector(".ganadorSelect");
+        select.addEventListener("change", (e) => {
+            const ganador = e.target.value;
+            // Elimina MITB activo anterior del mismo género
+            divisiones.forEach(div => {
+                rankings[div].forEach(l => {
+                    if (l.estado === "MITB") l.estado = undefined;
+                });
+            });
+            // Asignar estado MITB al ganador
+            const luchadorGanador = ranking.find(l => l.nombre === ganador);
+            if (luchadorGanador) luchadorGanador.estado = "MITB";
+            console.log(`MITB activo asignado a: ${ganador}`);
+        });
+    });
+
+    // MITB Femenil y Varonil
+    ["MITB Femenil", "MITB Varonil"].forEach(mitb => {
+        let pool = [];
+        divisiones.forEach(div => {
+            if (["Midcard", "Mundial"].includes(div)) {
+                const ranking = rankings[div] || [];
+                pool.push(...ranking.filter(l => !l.campeon));
+            }
+        });
+
+        pool = pool.sort(() => 0.5 - Math.random()).slice(0, 6);
+
+        const luchaMITB = document.createElement("div");
+        luchaMITB.className = "fightCard";
+        luchaMITB.innerHTML = `
+            <h3>${mitb}</h3>
+            <p>Participantes ocultos</p>
+            <select class="ganadorSelect">
+                <option value="">Seleccionar ganador</option>
+                ${pool.map(p => <option value="${p.nombre}">${p.nombre}</option>).join("")}
+            </select>
+        `;
+        container.appendChild(luchaMITB);
+
+        // Evento para asignar estado MITB al ganador
+        const selectMITB = luchaMITB.querySelector(".ganadorSelect");
+        selectMITB.addEventListener("change", (e) => {
+            const ganador = e.target.value;
+            // Remover MITB activo anterior del mismo género
+            divisiones.forEach(div => {
+                rankings[div].forEach(l => {
+                    if (l.estado === "MITB") l.estado = undefined;
+                });
+            });
+            // Asignar estado MITB
+            const luchadorGanador = pool.find(l => l.nombre === ganador);
+            if (luchadorGanador) luchadorGanador.estado = "MITB";
+            console.log(`MITB activo asignado a: ${ganador}`);
+        });
+    });
+}
+    // Función para actualizar select de luchadores MITB activos
+function actualizarSelectMITB() {
+    const selectLuchador = document.getElementById("luchadorMITB");
+    selectLuchador.innerHTML = '<option value="">Selecciona luchador con MITB activo</option>';
+    Object.keys(rankings).forEach(div => {
+        rankings[div].forEach(l => {
+            if (l.estado === "MITB") {
+                const option = document.createElement("option");
+                option.value = l.nombre;
+                option.textContent = l.nombre;
+                selectLuchador.appendChild(option);
+            }
+        });
+    });
+}
+
+// Función para actualizar select de títulos
+function actualizarSelectTitulos() {
+    const selectTitulo = document.getElementById("tituloMITB");
+    selectTitulo.innerHTML = '<option value="">Selecciona título</option>';
+    Object.keys(campeones).forEach(titulo => {
+        const option = document.createElement("option");
+        option.value = titulo;
+        option.textContent = titulo;
+        selectTitulo.appendChild(option);
+    });
+}
+
+// Llamar al inicio para llenar selects
+actualizarSelectMITB();
+actualizarSelectTitulos();
+
+// Botón de canje
+document.getElementById("canjearMITBBtn").addEventListener("click", () => {
+    const luchadorNombre = document.getElementById("luchadorMITB").value;
+    const titulo = document.getElementById("tituloMITB").value;
+
+    if (!luchadorNombre || !titulo) {
+        alert("Debes seleccionar luchador y título.");
+        return;
+    }
+
+    // Validación MITB activo
+    let ganador;
+    Object.keys(rankings).forEach(div => {
+        rankings[div].forEach(l => {
+            if (l.nombre === luchadorNombre) ganador = l;
+        });
+    });
+
+    if (!ganador || ganador.estado !== "MITB") {
+        alert("El luchador seleccionado no tiene MITB activo.");
+        return;
+    }
+
+    // Validación RR
+    if (ganador.estado === "RR") {
+        alert("No se puede canjear MITB mientras tenga estado RR.");
+        return;
+    }
+
+    // Validación campeón actual
+    if (campeones[titulo] === ganador.nombre) {
+        alert("El luchador ya es campeón de ese título.");
+        return;
+    }
+
+    // Canje
+    campeones[titulo] = ganador.nombre;
+    ganador.estado = undefined; // eliminar MITB
+    console.log(`${ganador.nombre} canjeó MITB y se convirtió en campeón de ${titulo}`);
+    alert(`${ganador.nombre} ahora es campeón de ${titulo}`);
+
+    // Actualizar select de luchadores MITB activos
+    actualizarSelectMITB();
+});
+    
+      // Función para mostrar ranking con días de campeón
+  function mostrarRankingConDias(rankings, campeones, contenedorId) {
+      const container = document.getElementById(contenedorId);
+      container.innerHTML = ""; // limpiar contenido previo
+
+      Object.keys(rankings).forEach(division => {
+          const divTitulo = document.createElement("h3");
+          divTitulo.textContent = division;
+          container.appendChild(divTitulo);
+
+          const lista = document.createElement("ul");
+
+          rankings[division].forEach((luchador, index) => {
+              const li = document.createElement("li");
+
+              // Determinar si es campeón
+              let esCampeon = false;
+              Object.keys(campeones).forEach(titulo => {
+                  if (campeones[titulo].nombre === luchador.nombre) {
+                      esCampeon = true;
+                      li.textContent = #${index + 1} ${luchador.nombre} - CAMPEÓN (${campeones[titulo].dias || 0} días);
+                  }
+              });
+
+              if (!esCampeon) {
+                  li.textContent = #${index + 1} ${luchador.nombre};
+              }
+
+              lista.appendChild(li);
+          });
+
+          container.appendChild(lista);
+      });
+  }
+
+  // Función para actualizar días de campeones según show
+  function actualizarDiasCampeonPorShow(show, campeones) {
+      Object.values(campeones).forEach(champ => {
+          if (!champ.dias) champ.dias = 0;
+
+          switch(show) {
+              case "PPV":
+                  // PPV no suma días
+                  break;
+              case "RAW":
+                  // Suma 2 días si recién ganó en PPV, luego 3 normalmente
+                  champ.dias += champ.dias === 0 ? 2 : 3;
+                  break;
+              case "NXT":
+                  champ.dias += 1;
+                  break;
+              case "SmackDown":
+                  champ.dias += 3;
+                  break;
+          }
+      });
+  }
+
+  // Ejemplo de uso: simulación de semana con PPV sábado
+  // Asegúrate de tener tus objetos rankings y campeones definidos previamente
+
+  // PPV sábado (no suma días)
+  actualizarDiasCampeonPorShow("PPV", campeones);
+
+  // Lunes RAW
+  actualizarDiasCampeonPorShow("RAW", campeones);
+  mostrarRankingConDias(rankings, campeones, "rankingContainer");
+
+  // Martes NXT
+  actualizarDiasCampeonPorShow("NXT", campeones);
+  mostrarRankingConDias(rankings, campeones, "rankingContainer");
+
+  // Viernes SmackDown
+  actualizarDiasCampeonPorShow("SmackDown", campeones);
+  mostrarRankingConDias(rankings, campeones, "rankingContainer");
+    
+</script>
+</body>
+</html>
